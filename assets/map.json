@@ -1,0 +1,38 @@
+{
+"room 0" : {
+  "id": 0,
+  "title": "the test name room",
+  "description": "this room is utilised for development purposes",
+  "NORTH": 1,
+  "SOUTH": 1,
+  "EAST": 1,
+  "UP": 1,
+  "items": [
+    {
+      "name": "sample item 1",
+      "description": "this is a sample item",
+      "contained": [
+        {
+          "name": "sample contained item 1",
+          "description": "this is a sample item contained in another one"
+        }
+      ],
+      "properties": ["LOCKABLE", "OPENABLE", "USABLE"]
+    },
+    {
+      "name": "sample item 2",
+      "description": "this is another sample item"
+    }
+  ]
+},
+
+"room 1" : {
+  "id" : 1,
+  "title": "the test name room 2",
+  "description": "this room too is utilised for development purposes",
+  "NORTH": 0,
+  "SOUTH": 0,
+  "EAST": 0,
+  "WEST": 0
+}
+}

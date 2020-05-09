@@ -1,0 +1,25 @@
+name: gota
+description: Generator of Text Adventures
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.6.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^0.1.2
+  bit_array: ^2.0.0
+  path_provider: ^0.4.1
+  enum_to_string: ^1.0.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+  - images/
+  - assets/
