@@ -9,23 +9,30 @@ class Adventure {
   Loader _loader;
   Room _currentRoom;
 
-  Adventure(String resource) {
+  Adventure();
+
+  Future<void> load(String resource) async {
     _loader = AssetLoader(resource);
 
+    // TODO maybe split into a load async function?
     var loaded = _loader.load();
 
     loaded.then((onValue) {
-      Map<String, dynamic> decoded = _loader.getDecoded();
+      if (onValue) {
+        Map<String, dynamic> decoded = _loader.getDecoded();
 
-      decoded.forEach((k, v) {
-        if (v is Map) {
-          _map.add(Room.fromJson(v));
-        }
-      });
+        decoded.forEach((k, v) {
+          if (v is Map) {
+            _map.add(Room.fromJson(v));
+          }
+        });
 
-      for (var room in _map) room.toConsole();
-      // TODO set initial room
-      _currentRoom = _map[0];
+        for (var room in _map) room.toConsole();
+        // TODO set initial room
+        _currentRoom = _map[0];
+      } else {
+        print('Adventure failed to load');
+      }
     });
   }
 

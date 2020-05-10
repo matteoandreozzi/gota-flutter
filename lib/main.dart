@@ -1,8 +1,11 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:gota/adventure.dart';
 import 'package:gota/room.dart';
 
-void main() => runApp(Destini());
+void main() {
+  runApp(Destini());
+}
 
 class Destini extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -18,7 +21,7 @@ class StoryPage extends StatefulWidget {
 }
 
 class _StoryPageState extends State<StoryPage> {
-  Adventure adventure = Adventure('assets/map.json');
+  Adventure _adventure;
 
   List<Widget> drawTitleAndText() {
     return [
@@ -26,7 +29,7 @@ class _StoryPageState extends State<StoryPage> {
         flex: 4,
         child: Center(
           child: Text(
-            adventure.getTitle(),
+            _adventure.getTitle(),
             style: TextStyle(
               fontSize: 25.0,
             ),
@@ -37,7 +40,7 @@ class _StoryPageState extends State<StoryPage> {
         flex: 8,
         child: Center(
           child: Text(
-            adventure.getStory(),
+            _adventure.getStory(),
             style: TextStyle(
               fontSize: 25.0,
             ),
@@ -51,19 +54,19 @@ class _StoryPageState extends State<StoryPage> {
     List<Widget> buttons = [];
 
     for (var dir in Direction.values) {
-      if (adventure.directionVisible(dir)) {
+      if (_adventure.directionVisible(dir)) {
         buttons.add(
           Expanded(
             flex: 1,
             child: FlatButton(
               onPressed: () {
                 setState(() {
-                  adventure.navigate(dir);
+                  _adventure.navigate(dir);
                 });
               },
               color: Colors.teal,
               child: Text(
-                dir.toShortString(),
+                EnumToString.parse(dir),
                 style: TextStyle(
                   fontSize: 20.0,
                 ),
@@ -74,6 +77,13 @@ class _StoryPageState extends State<StoryPage> {
       }
     }
     return buttons;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _adventure = Adventure();
+    _adventure.load('assets/map.json').then((value) => setState(() {}));
   }
 
   @override

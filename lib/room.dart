@@ -1,12 +1,8 @@
+import 'package:enum_to_string/enum_to_string.dart';
+
 import 'item.dart';
 
 enum Direction { NORTH, EAST, SOUTH, WEST, UP, DOWN }
-
-extension ParseToString on Direction {
-  String toShortString() {
-    return this.toString().split('.').last;
-  }
-}
 
 class Room {
   int _id;
@@ -26,7 +22,7 @@ class Room {
     _title = json['title'];
     _description = json['description'];
     for (var dir in Direction.values) {
-      _doors[dir] = json[dir.toShortString()];
+      _doors[dir] = json[EnumToString.parse(dir)];
     }
     if (json['items'] != null) {
       for (var i in json['items']) {
