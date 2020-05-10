@@ -9,6 +9,7 @@
   "UP": 1,
   "items": [
     {
+      "id": 0,
       "name": "sample item 1",
       "description": "this is a sample item",
       "contained": [
@@ -20,6 +21,7 @@
       "properties": ["LOCKABLE", "OPENABLE", "USABLE"]
     },
     {
+      "id": 1,
       "name": "sample item 2",
       "description": "this is another sample item"
     }

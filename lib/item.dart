@@ -36,27 +36,30 @@ class Item {
   final _properties = BitArray(ItemProperty.NUM_PROPERTIES.index);
 
   // object status
-  final _statuses = BitArray(ItemStatus.NUM_STATUSES.index);
+  final _status = BitArray(ItemStatus.NUM_STATUSES.index);
 
-  Item.fromJson(Map<String, dynamic> json) {
-    _name = json['name'];
-    _description = json['description'];
-    _health = json['health'];
-    if (json['contained'] != null) {
-      for (var c in json['contained']) {
-        _contained.add(Item.fromJson(c));
-      }
+  Item(this._id, this._name, this._description, List<dynamic> properties,
+      List<dynamic> status, List<dynamic> contained) {
+    for (var p in properties ?? []) {
+      _properties.setBit(EnumToString.fromString(ItemProperty.values, p).index);
     }
-    if (json['properties'] != null) {
-      for (var p in json['properties']) {
-        var property = EnumToString.fromString(ItemProperty.values, p);
-        _properties.setBit(property.index);
-      }
+    for (var s in status ?? []) {
+      _status.setBit(EnumToString.fromString(ItemStatus.values, s).index);
     }
+
+    for (var c in contained ?? []) {
+      _contained.add(Item.fromJson(c));
+    }
+  }
+
+  factory Item.fromJson(Map<String, dynamic> json) {
+    return Item(json['id'], json['name'], json['description'],
+        json['properties'], json['status'], json['contained']);
   }
 
   void toConsole() {
     print('Item $_name, $_description');
+
     for (var p in _properties.asIntIterable()) {
       print('Property ${ItemProperty.values[p]}');
     }
@@ -68,12 +71,12 @@ class Item {
 
   bool hasProperty(ItemProperty p) => _properties[p.index];
 
-  bool hasStatus(ItemStatus p) => _statuses[p.index];
+  bool hasStatus(ItemStatus p) => _status[p.index];
 
   bool lock(int key) {
     if (_properties[ItemProperty.LOCKABLE.index]) {
       if (key == _id) {
-        _statuses.setBit(ItemStatus.LOCKED.index);
+        _status.setBit(ItemStatus.LOCKED.index);
         return true;
       }
     }
@@ -90,7 +93,7 @@ class Item {
   bool unlock(int key) {
     if (_properties[ItemProperty.LOCKABLE.index]) {
       if (key == _id) {
-        _statuses.clearBit(ItemStatus.LOCKED.index);
+        _status.clearBit(ItemStatus.LOCKED.index);
         return true;
       }
     }
@@ -99,7 +102,7 @@ class Item {
 
   bool switchOn() {
     if (_properties[ItemProperty.SWITCHABLE.index] && age()) {
-      _statuses.setBit(ItemStatus.SWITCHED.index);
+      _status.setBit(ItemStatus.SWITCHED.index);
       return true;
     }
     return false;
@@ -107,7 +110,7 @@ class Item {
 
   bool switchOff() {
     if (_properties[ItemProperty.SWITCHABLE.index]) {
-      _statuses.clearBit(ItemStatus.SWITCHED.index);
+      _status.clearBit(ItemStatus.SWITCHED.index);
       return true;
     }
     return false;
@@ -115,8 +118,8 @@ class Item {
 
   bool open() {
     if (_properties[ItemProperty.OPENABLE.index] &&
-        !_statuses[ItemStatus.LOCKED.index]) {
-      _statuses.setBit(ItemStatus.OPENED.index);
+        !_status[ItemStatus.LOCKED.index]) {
+      _status.setBit(ItemStatus.OPENED.index);
       return true;
     }
     return false;
@@ -124,8 +127,8 @@ class Item {
 
   bool close() {
     if (_properties[ItemProperty.OPENABLE.index] &&
-        !_statuses[ItemStatus.LOCKED.index]) {
-      _statuses.clearBit(ItemStatus.OPENED.index);
+        !_status[ItemStatus.LOCKED.index]) {
+      _status.clearBit(ItemStatus.OPENED.index);
       return true;
     }
     return false;
@@ -134,20 +137,10 @@ class Item {
   String examine() => _description;
 
   void makeVisible() {
-    _statuses.setBit(ItemStatus.VISIBLE.index);
+    _status.setBit(ItemStatus.VISIBLE.index);
   }
 
   void makeInvisible() {
-    _statuses.clearBit(ItemStatus.VISIBLE.index);
-  }
-
-  Item(this._id, this._name, this._description, List<ItemProperty> properties,
-      List<ItemStatus> status) {
-    for (var p in properties) {
-      _properties.setBit(p.index);
-    }
-    for (var s in status) {
-      _statuses.setBit(s.index);
-    }
+    _status.clearBit(ItemStatus.VISIBLE.index);
   }
 }

@@ -14,7 +14,6 @@ class Adventure {
   Future<void> load(String resource) async {
     _loader = AssetLoader(resource);
 
-    // TODO maybe split into a load async function?
     var loaded = _loader.load();
 
     loaded.then((onValue) {
@@ -28,7 +27,6 @@ class Adventure {
         });
 
         for (var room in _map) room.toConsole();
-        // TODO set initial room
         _currentRoom = _map[0];
       } else {
         print('Adventure failed to load');
@@ -36,16 +34,11 @@ class Adventure {
     });
   }
 
-  String getTitle() =>
-      _currentRoom != null ? _currentRoom.getTitle() : 'Loading';
-  String getStory() =>
-      _currentRoom != null ? _currentRoom.getDescription() : 'Loading';
+  String getTitle() => _currentRoom?.getTitle() ?? 'Loading';
+  String getStory() => _currentRoom?.getDescription() ?? 'Loading';
 
   bool directionVisible(Direction dir) {
-    if (_currentRoom != null) {
-      return (_currentRoom.getDoor(dir) != null);
-    }
-    return false;
+    return (_currentRoom?.getDoor(dir) != null);
   }
 
   void navigate(Direction dir) {

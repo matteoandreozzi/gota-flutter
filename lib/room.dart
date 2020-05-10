@@ -24,10 +24,9 @@ class Room {
     for (var dir in Direction.values) {
       _doors[dir] = json[EnumToString.parse(dir)];
     }
-    if (json['items'] != null) {
-      for (var i in json['items']) {
-        _items.add(Item.fromJson(i));
-      }
+
+    for (var i in json['items'] ?? []) {
+      _items.add(Item.fromJson(i));
     }
   }
 
