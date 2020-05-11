@@ -1,6 +1,7 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:gota/adventure.dart';
+import 'package:gota/parser.dart';
 import 'package:gota/room.dart';
 
 void main() {
@@ -82,6 +83,26 @@ class _StoryPageState extends State<StoryPage> {
   @override
   void initState() {
     super.initState();
+    CommandParser parser = CommandParser();
+
+    var result = parser.parse('use shiny lamp with mumbo jumbo');
+    //result.
+    if (result.isSuccess) {
+      print('Result of the 1 parsing ${result.value}');
+    }
+
+    result = parser.parse('use chicken on hook');
+    //result.
+    if (result.isSuccess) {
+      print('Result of the 2 parsing ${result.value}');
+    }
+
+    result = parser.parse('close door');
+    //result.
+    if (result.isSuccess) {
+      print('Result of the 3 parsing ${result.value}');
+    }
+
     _adventure = Adventure();
     _adventure.load('assets/map.json').then((value) => setState(() {}));
   }
