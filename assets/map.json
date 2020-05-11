@@ -22,8 +22,9 @@
     },
     {
       "id": 1,
-      "name": "sample item 2",
-      "description": "this is another sample item"
+      "name": "chicken",
+      "description": "this is the chicken",
+      "properties": ["LOCKABLE", "OPENABLE", "USABLE"]
     }
   ]
 },
