@@ -120,6 +120,7 @@ class Item {
     if (_properties[ItemProperty.OPENABLE.index] &&
         !_status[ItemStatus.LOCKED.index]) {
       _status.setBit(ItemStatus.OPENED.index);
+      print('$_name has been opened');
       return true;
     }
     return false;
@@ -134,6 +135,7 @@ class Item {
     return false;
   }
 
+  String name() => _name;
   String examine() => _description;
 
   void makeVisible() {

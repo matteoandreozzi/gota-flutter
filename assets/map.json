@@ -37,5 +37,27 @@
   "SOUTH": 0,
   "EAST": 0,
   "WEST": 0
-}
+},
+
+  "inventory": [
+  {
+    "id": 0,
+    "name": "mazza",
+    "description": "this is a mazza",
+    "contained": [
+      {
+        "name": "pizzone",
+        "description": "this is a pizzone"
+      }
+    ],
+    "properties": ["LOCKABLE", "OPENABLE", "USABLE"]
+  },
+  {
+    "id": 1,
+    "name": "chicken",
+    "description": "this is the chicken in the inventory",
+    "properties": ["LOCKABLE", "OPENABLE", "USABLE"]
+  }
+]
+
 }

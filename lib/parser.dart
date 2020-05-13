@@ -24,12 +24,13 @@ class CommandParser {
     // define syntax for prepositions
 
     // Greedy first part of the command line
-    final commandArg = item.plusLazy(endOfInput() | preposition).flatten();
+    final commandArg =
+        item.plusLazy(endOfInput() | preposition).flatten().trim();
 
     // add object name, optional 'with' , requires optional target
-    _commandLine.set(commands &
+    _commandLine.set(commands.trim() &
         commandArg &
-        (endOfInput() | (preposition & item.plus().flatten())));
+        (endOfInput() | (preposition.trim() & item.plus().flatten())));
   }
 
   Result<dynamic> parse(String toParse) => _commandLine.parse(toParse);

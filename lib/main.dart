@@ -1,3 +1,4 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:gota/adventure.dart';
@@ -23,36 +24,11 @@ class StoryPage extends StatefulWidget {
 
 class _StoryPageState extends State<StoryPage> {
   Adventure _adventure;
+  CommandParser _commandParser;
+  GlobalKey<AutoCompleteTextFieldState<String>> _textFieldKey = GlobalKey();
 
-  List<Widget> drawTitleAndText() {
-    return [
-      Expanded(
-        flex: 4,
-        child: Center(
-          child: Text(
-            _adventure.getTitle(),
-            style: TextStyle(
-              fontSize: 25.0,
-            ),
-          ),
-        ),
-      ),
-      Expanded(
-        flex: 8,
-        child: Center(
-          child: Text(
-            _adventure.getStory(),
-            style: TextStyle(
-              fontSize: 25.0,
-            ),
-          ),
-        ),
-      ),
-    ];
-  }
-
-  List<Widget> drawNavigationButtons() {
-    List<Widget> buttons = [];
+  List<Expanded> drawNavigationButtons() {
+    List<Expanded> buttons = [];
 
     for (var dir in Direction.values) {
       if (_adventure.directionVisible(dir)) {
@@ -83,28 +59,28 @@ class _StoryPageState extends State<StoryPage> {
   @override
   void initState() {
     super.initState();
-    CommandParser parser = CommandParser();
-
-    var result = parser.parse('use shiny lamp with mumbo jumbo');
-    //result.
-    if (result.isSuccess) {
-      print('Result of the 1 parsing ${result.value}');
-    }
-
-    result = parser.parse('use chicken on hook');
-    //result.
-    if (result.isSuccess) {
-      print('Result of the 2 parsing ${result.value}');
-    }
-
-    result = parser.parse('close door');
-    //result.
-    if (result.isSuccess) {
-      print('Result of the 3 parsing ${result.value}');
-    }
-
+    _commandParser = CommandParser();
     _adventure = Adventure();
-    _adventure.load('assets/map.json').then((value) => setState(() {}));
+    _adventure.load('assets/map.json').then((value) => setState(() {
+          var result = _commandParser.parse('use shiny lamp with mumbo jumbo');
+          //result.
+          if (result.isSuccess) {
+            print('Result of the 1 parsing ${result.value}');
+          }
+
+          result = _commandParser.parse('use chicken on hook');
+          //result.
+          if (result.isSuccess) {
+            print('Result of the 2 parsing ${result.value}');
+          }
+
+          result = _commandParser.parse('open chicken');
+          //result.
+          if (result.isSuccess) {
+            print('Result of the 3 parsing ${result.value}');
+            _adventure.command(result.value);
+          }
+        }));
   }
 
   @override
@@ -121,7 +97,52 @@ class _StoryPageState extends State<StoryPage> {
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: drawTitleAndText() + drawNavigationButtons(),
+            children: [
+                  Expanded(
+                    flex: 4,
+                    child: Center(
+                      child: Text(
+                        _adventure.getTitle(),
+                        style: TextStyle(
+                          fontSize: 25.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 8,
+                    child: Center(
+                      child: Text(
+                        _adventure.getStory(),
+                        style: TextStyle(
+                          fontSize: 25.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Center(
+                      child: SimpleAutoCompleteTextField(
+                        key: _textFieldKey,
+                        decoration: new InputDecoration(errorText: "Command"),
+                        controller: TextEditingController(text: ""),
+                        suggestions: (Command.values
+                            .map((e) => EnumToString.parse(e))
+                            .toList()), //+ Preposition.values.map((e) => EnumToString.parse(e))),// ,
+                        textChanged: (text) => text,
+                        clearOnSubmit: true,
+                        textSubmitted: (text) => setState(() {
+                          var result = _commandParser.parse(text);
+                          if (result.isSuccess) {
+                            _adventure.command(result.value);
+                          }
+                        }),
+                      ),
+                    ),
+                  ),
+                ] +
+                drawNavigationButtons(),
           ),
         ),
       ),

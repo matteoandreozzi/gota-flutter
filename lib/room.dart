@@ -8,7 +8,7 @@ class Room {
   int _id;
   String _title, _description;
   Map<Direction, int> _doors = Map();
-  List<Item> _items = [];
+  Map<String, Item> _items = Map();
 
   String getTitle() => _title;
   String getDescription() => _description;
@@ -26,13 +26,18 @@ class Room {
     }
 
     for (var i in json['items'] ?? []) {
-      _items.add(Item.fromJson(i));
+      _items[i['name']] = Item.fromJson(i);
     }
   }
 
   void toConsole() {
     print('Room $_id, $_title, $_description');
-    _doors.forEach((k, v) => print('$k: $v'));
-    for (var i in _items) i.toConsole();
+    _doors.forEach((key, value) => print('$key: $value'));
+    _items.forEach((key, value) {
+      value.toConsole();
+    });
   }
+
+  Item getItem(String name) => _items[name];
+  List<String> getItemNames() => _items.keys;
 }
