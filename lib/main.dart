@@ -3,7 +3,7 @@ import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:gota/adventure.dart';
 import 'package:gota/parser.dart';
-import 'package:gota/room.dart';
+import 'package:gota/syntax.dart';
 
 void main() {
   runApp(Destini());
@@ -39,6 +39,7 @@ class _StoryPageState extends State<StoryPage> {
               onPressed: () {
                 setState(() {
                   _adventure.navigate(dir);
+                  refreshInputTextSuggestions();
                 });
               },
               color: Colors.teal,
@@ -54,6 +55,10 @@ class _StoryPageState extends State<StoryPage> {
       }
     }
     return buttons;
+  }
+
+  void refreshInputTextSuggestions() {
+    _textFieldKey.currentState.updateSuggestions(_adventure.commandSuggestions);
   }
 
   @override
@@ -80,6 +85,7 @@ class _StoryPageState extends State<StoryPage> {
             print('Result of the 3 parsing ${result.value}');
             _adventure.command(result.value);
           }
+          refreshInputTextSuggestions();
         }));
   }
 
@@ -102,7 +108,7 @@ class _StoryPageState extends State<StoryPage> {
                     flex: 4,
                     child: Center(
                       child: Text(
-                        _adventure.getTitle(),
+                        _adventure.title,
                         style: TextStyle(
                           fontSize: 25.0,
                         ),
@@ -113,7 +119,7 @@ class _StoryPageState extends State<StoryPage> {
                     flex: 8,
                     child: Center(
                       child: Text(
-                        _adventure.getStory(),
+                        _adventure.story,
                         style: TextStyle(
                           fontSize: 25.0,
                         ),
@@ -123,19 +129,39 @@ class _StoryPageState extends State<StoryPage> {
                   Expanded(
                     flex: 4,
                     child: Center(
-                      child: SimpleAutoCompleteTextField(
+                      child: AutoCompleteTextField<String>(
                         key: _textFieldKey,
-                        decoration: new InputDecoration(errorText: "Command"),
+                        clearOnSubmit: false,
                         controller: TextEditingController(text: ""),
-                        suggestions: (Command.values
-                            .map((e) => EnumToString.parse(e))
-                            .toList()), //+ Preposition.values.map((e) => EnumToString.parse(e))),// ,
-                        textChanged: (text) => text,
-                        clearOnSubmit: true,
+                        style: TextStyle(color: Colors.white, fontSize: 16.0),
+                        decoration: InputDecoration(
+                          contentPadding:
+                              EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
+                          hintText: "Command",
+                          hintStyle: TextStyle(color: Colors.teal),
+                        ),
+                        suggestions: _adventure.commandSuggestions,
+                        itemFilter: (item, query) {
+                          return item
+                              .toLowerCase()
+                              .startsWith(query.toLowerCase());
+                        },
+                        itemSorter: (a, b) {
+                          return a.compareTo(b);
+                        },
+                        itemSubmitted: (item) {
+                          setState(() {
+                            _textFieldKey.currentState.controller.text = item;
+                          });
+                        },
+                        itemBuilder: (context, suggestion) => new Padding(
+                            child: new Text(suggestion),
+                            padding: EdgeInsets.all(8.0)),
                         textSubmitted: (text) => setState(() {
                           var result = _commandParser.parse(text);
                           if (result.isSuccess) {
                             _adventure.command(result.value);
+                            refreshInputTextSuggestions();
                           }
                         }),
                       ),
