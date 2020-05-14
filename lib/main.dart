@@ -1,6 +1,7 @@
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:gota/adventure.dart';
 import 'package:gota/parser.dart';
 import 'package:gota/syntax.dart';
@@ -25,7 +26,8 @@ class StoryPage extends StatefulWidget {
 class _StoryPageState extends State<StoryPage> {
   Adventure _adventure;
   CommandParser _commandParser;
-  GlobalKey<AutoCompleteTextFieldState<String>> _textFieldKey = GlobalKey();
+  final _typeAheadController = TextEditingController();
+  final _focusNode = FocusNode();
 
   List<Expanded> drawNavigationButtons() {
     List<Expanded> buttons = [];
@@ -39,7 +41,6 @@ class _StoryPageState extends State<StoryPage> {
               onPressed: () {
                 setState(() {
                   _adventure.navigate(dir);
-                  refreshInputTextSuggestions();
                 });
               },
               color: Colors.teal,
@@ -57,35 +58,13 @@ class _StoryPageState extends State<StoryPage> {
     return buttons;
   }
 
-  void refreshInputTextSuggestions() {
-    _textFieldKey.currentState.updateSuggestions(_adventure.commandSuggestions);
-  }
-
   @override
   void initState() {
     super.initState();
     _commandParser = CommandParser();
     _adventure = Adventure();
     _adventure.load('assets/map.json').then((value) => setState(() {
-          var result = _commandParser.parse('use shiny lamp with mumbo jumbo');
-          //result.
-          if (result.isSuccess) {
-            print('Result of the 1 parsing ${result.value}');
-          }
-
-          result = _commandParser.parse('use chicken on hook');
-          //result.
-          if (result.isSuccess) {
-            print('Result of the 2 parsing ${result.value}');
-          }
-
-          result = _commandParser.parse('open chicken');
-          //result.
-          if (result.isSuccess) {
-            print('Result of the 3 parsing ${result.value}');
-            _adventure.command(result.value);
-          }
-          refreshInputTextSuggestions();
+          // refresh the widget
         }));
   }
 
@@ -129,41 +108,55 @@ class _StoryPageState extends State<StoryPage> {
                   Expanded(
                     flex: 4,
                     child: Center(
-                      child: AutoCompleteTextField<String>(
-                        key: _textFieldKey,
-                        clearOnSubmit: false,
-                        controller: TextEditingController(text: ""),
-                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                        decoration: InputDecoration(
-                          contentPadding:
-                              EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
-                          hintText: "Command",
-                          hintStyle: TextStyle(color: Colors.teal),
+                      child: TypeAheadField(
+                        textFieldConfiguration: TextFieldConfiguration(
+                          focusNode: _focusNode,
+                          decoration: InputDecoration(labelText: 'Command'),
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                          controller: _typeAheadController,
+                          onSubmitted: (text) => setState(() {
+                            var result = _commandParser.parse(text);
+                            if (result.isSuccess) {
+                              _adventure.command(result.value);
+                            }
+                            _typeAheadController.text = '';
+                          }),
                         ),
-                        suggestions: _adventure.commandSuggestions,
-                        itemFilter: (item, query) {
-                          return item
-                              .toLowerCase()
-                              .startsWith(query.toLowerCase());
-                        },
-                        itemSorter: (a, b) {
-                          return a.compareTo(b);
-                        },
-                        itemSubmitted: (item) {
-                          setState(() {
-                            _textFieldKey.currentState.controller.text = item;
-                          });
-                        },
-                        itemBuilder: (context, suggestion) => new Padding(
-                            child: new Text(suggestion),
-                            padding: EdgeInsets.all(8.0)),
-                        textSubmitted: (text) => setState(() {
-                          var result = _commandParser.parse(text);
-                          if (result.isSuccess) {
-                            _adventure.command(result.value);
-                            refreshInputTextSuggestions();
+                        suggestionsCallback: (pattern) {
+                          var hint = pattern.toLowerCase().split(' ').last;
+                          if (hint != '') {
+                            return _adventure.commandSuggestions.where(
+                                (element) =>
+                                    element.toLowerCase().startsWith(hint));
                           }
-                        }),
+                          // todo maybe define a noSuggestions widget
+                          return [''];
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(suggestion),
+                          );
+                        },
+                        transitionBuilder:
+                            (context, suggestionsBox, controller) {
+                          return suggestionsBox;
+                        },
+                        onSuggestionSelected: (suggestion) {
+                          // TODO FOCUS AGAIN HERE - NEEDS FIXING THE OVERLAY NOT SHOWING
+                          //_focusNode.requestFocus();
+
+                          var spaceIndex =
+                              this._typeAheadController.text.lastIndexOf(' ');
+
+                          this._typeAheadController.text = (spaceIndex > -1
+                                  ? this
+                                      ._typeAheadController
+                                      .text
+                                      .substring(0, spaceIndex)
+                                  : ' ') +
+                              ' ' +
+                              suggestion;
+                        },
                       ),
                     ),
                   ),

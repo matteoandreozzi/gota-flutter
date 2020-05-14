@@ -53,11 +53,11 @@ class Adventure {
   List<String> get currentRoomItemNames => _currentRoom?.getItemNames();
 
   List<String> get commandSuggestions {
-    print('returning suggestions ${[
-      ...getSyntaxSuggestions(),
-      ...?inventoryNames,
-      ...?currentRoomItemNames
-    ]}');
+//    print('returning suggestions ${[
+//      ...getSyntaxSuggestions(),
+//      ...?inventoryNames,
+//      ...?currentRoomItemNames
+//    ]}');
 
     return [
       ...getSyntaxSuggestions(),
