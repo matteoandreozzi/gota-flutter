@@ -122,6 +122,9 @@ class _StoryPageState extends State<StoryPage> {
                             _typeAheadController.text = '';
                           }),
                         ),
+                        keepSuggestionsOnSuggestionSelected: true,
+                        animationStart: 0.1,
+                        animationDuration: Duration(milliseconds: 200),
                         suggestionsCallback: (pattern) {
                           var hint = pattern.toLowerCase().split(' ').last;
                           if (hint != '') {
@@ -130,7 +133,7 @@ class _StoryPageState extends State<StoryPage> {
                                     element.toLowerCase().startsWith(hint));
                           }
                           // todo maybe define a noSuggestions widget
-                          return [''];
+                          return [];
                         },
                         itemBuilder: (context, suggestion) {
                           return ListTile(
@@ -142,19 +145,19 @@ class _StoryPageState extends State<StoryPage> {
                           return suggestionsBox;
                         },
                         onSuggestionSelected: (suggestion) {
-                          // TODO FOCUS AGAIN HERE - NEEDS FIXING THE OVERLAY NOT SHOWING
-                          //_focusNode.requestFocus();
+                          // TODO only works if we keep the suggestions on
+                          _focusNode.requestFocus();
 
                           var spaceIndex =
                               this._typeAheadController.text.lastIndexOf(' ');
 
                           this._typeAheadController.text = (spaceIndex > -1
                                   ? this
-                                      ._typeAheadController
-                                      .text
-                                      .substring(0, spaceIndex)
-                                  : ' ') +
-                              ' ' +
+                                          ._typeAheadController
+                                          .text
+                                          .substring(0, spaceIndex) +
+                                      ' '
+                                  : '') +
                               suggestion;
                         },
                       ),
