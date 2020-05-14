@@ -1,5 +1,5 @@
 import 'package:gota/loader.dart';
-import 'package:gota/parser.dart';
+import 'package:gota/syntax.dart';
 
 import 'item.dart';
 import 'room.dart';
@@ -44,11 +44,27 @@ class Adventure {
     });
   }
 
-  String getTitle() => _currentRoom?.getTitle() ?? 'Loading';
+  String get title => _currentRoom?.title ?? 'Loading';
 
-  String getStory() => _currentStory;
+  String get story => _currentStory;
 
-  List<String> getInventoryNames() => _inventory.keys;
+  List<String> get inventoryNames => (_inventory.keys).toList();
+
+  List<String> get currentRoomItemNames => _currentRoom?.getItemNames();
+
+  List<String> get commandSuggestions {
+    print('returning suggestions ${[
+      ...getSyntaxSuggestions(),
+      ...?inventoryNames,
+      ...?currentRoomItemNames
+    ]}');
+
+    return [
+      ...getSyntaxSuggestions(),
+      ...?inventoryNames,
+      ...?currentRoomItemNames
+    ];
+  }
 
   bool directionVisible(Direction dir) {
     return (_currentRoom?.getDoor(dir) != null);
@@ -56,7 +72,7 @@ class Adventure {
 
   void navigate(Direction dir) {
     _currentRoom = _map[_currentRoom.getDoor(dir)];
-    _currentStory = _currentRoom.getDescription();
+    _currentStory = _currentRoom.description;
   }
 
   void command(List<dynamic> tokens) {
@@ -72,16 +88,18 @@ class Adventure {
           break;
         case Command.OPEN:
           if (target.open()) {
-            _currentStory = "${target.name()} has been opened";
+            _currentStory = "${target.name} has been opened";
           }
           break;
         case Command.EXAMINE:
-          _currentStory = target.examine();
+          _currentStory = target.description;
+          break;
+        default:
+          _currentStory = "this is a completely useless thingmabob";
           break;
       }
     } else {
-      _currentStory =
-          ('room ${_currentRoom.getTitle()} does not have ${tokens[1]}');
+      _currentStory = ('room ${_currentRoom.title} does not have ${tokens[1]}');
     }
   }
 }

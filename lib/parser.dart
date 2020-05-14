@@ -1,8 +1,6 @@
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:gota/syntax.dart';
 import 'package:petitparser/petitparser.dart';
-
-enum Command { USE, OPEN, CLOSE, LOCK, UNLOCK, EXAMINE }
-enum Preposition { WITH, ON }
 
 class CommandParser {
   final _commandLine = undefined();

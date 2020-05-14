@@ -36,7 +36,21 @@
   "NORTH": 0,
   "SOUTH": 0,
   "EAST": 0,
-  "WEST": 0
+  "WEST": 0,
+  "items": [
+    {
+      "id": 0,
+      "name": "palo",
+      "description": "this is a palo",
+      "properties": ["LOCKABLE", "OPENABLE", "USABLE"]
+    },
+    {
+      "id": 1,
+      "name": "old chicken",
+      "description": "this is the old chicken",
+      "properties": ["LOCKABLE", "OPENABLE", "USABLE"]
+    }
+  ]
 },
 
   "inventory": [

@@ -1,30 +1,6 @@
 import 'package:bit_array/bit_array.dart';
 import 'package:enum_to_string/enum_to_string.dart';
-
-enum ItemProperty {
-  NONE,
-  LOCKABLE,
-  TRANSPORTABLE,
-  CONTAINER,
-  OPENABLE,
-  SWITCHABLE,
-  PASSAGE,
-  CONSUMABLE,
-  USABLE,
-  HIDEOUT,
-  MOVABLE,
-  NUM_PROPERTIES
-}
-
-enum ItemStatus {
-  LOCKED,
-  OPENED,
-  SWITCHED,
-  CONSUMED,
-  USED,
-  VISIBLE,
-  NUM_STATUSES
-}
+import 'package:gota/syntax.dart';
 
 class Item {
   String _name, _description;
@@ -135,8 +111,8 @@ class Item {
     return false;
   }
 
-  String name() => _name;
-  String examine() => _description;
+  String get name => _name;
+  String get description => _description;
 
   void makeVisible() {
     _status.setBit(ItemStatus.VISIBLE.index);

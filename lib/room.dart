@@ -1,8 +1,7 @@
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:gota/syntax.dart';
 
 import 'item.dart';
-
-enum Direction { NORTH, EAST, SOUTH, WEST, UP, DOWN }
 
 class Room {
   int _id;
@@ -10,8 +9,8 @@ class Room {
   Map<Direction, int> _doors = Map();
   Map<String, Item> _items = Map();
 
-  String getTitle() => _title;
-  String getDescription() => _description;
+  String get title => _title;
+  String get description => _description;
   int getDoor(Direction dir) => _doors[dir];
 
   Room(this._id, this._title, this._description);
@@ -39,5 +38,5 @@ class Room {
   }
 
   Item getItem(String name) => _items[name];
-  List<String> getItemNames() => _items.keys;
+  List<String> getItemNames() => (_items.keys).toList();
 }
