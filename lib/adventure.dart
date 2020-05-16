@@ -31,10 +31,12 @@ class Adventure {
         });
 
         _currentRoom = _map[0];
-
+//TODO DEBUG
         print('Adventure loaded');
         for (var room in _map) room.toConsole();
+//TODO DEBUG
         print('Inventory');
+//TODO DEBUG
         _inventory.forEach((key, value) {
           value.toConsole();
         });
@@ -53,6 +55,7 @@ class Adventure {
   List<String> get currentRoomItemNames => _currentRoom?.getItemNames();
 
   List<String> get commandSuggestions {
+//TODO DEBUG
 //    print('returning suggestions ${[
 //      ...getSyntaxSuggestions(),
 //      ...?inventoryNames,
@@ -78,28 +81,14 @@ class Adventure {
   void command(List<dynamic> tokens) {
     // fetch target item from current room
     // TODO support empty commands to default to current room
-
+//TODO DEBUG
     print('received tokens: $tokens');
     var target = _inventory[tokens[1]] ?? _currentRoom.getItem(tokens[1]);
     if (target != null) {
-      switch (tokens[0]) {
-        case Command.USE:
-          target.switchOn();
-          break;
-        case Command.OPEN:
-          if (target.open()) {
-            _currentStory = "${target.name} has been opened";
-          }
-          break;
-        case Command.EXAMINE:
-          _currentStory = target.description;
-          break;
-        default:
-          _currentStory = "this is a completely useless thingmabob";
-          break;
-      }
+      _currentStory = target.action(tokens[0], null);
     } else {
-      _currentStory = ('room ${_currentRoom.title} does not have ${tokens[1]}');
+      _currentStory =
+          'room ${_currentRoom.title} contains ${_currentRoom.getItemNames()}';
     }
   }
 }

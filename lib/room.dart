@@ -23,12 +23,12 @@ class Room {
     for (var dir in Direction.values) {
       _doors[dir] = json[EnumToString.parse(dir)];
     }
-
     for (var i in json['items'] ?? []) {
       _items[i['name']] = Item.fromJson(i);
     }
   }
 
+  //TODO DEBUG
   void toConsole() {
     print('Room $_id, $_title, $_description');
     _doors.forEach((key, value) => print('$key: $value'));
